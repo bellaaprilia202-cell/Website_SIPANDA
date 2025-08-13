@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Formulir Pengaduan Rambu Lalu Lintas</title>
+  <style>
+    body {
+      font-family: 'Trebuchet MS', Arial, sans-serif;
+      background: url(rambu.png) no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 50px auto;
+      background: rgba(146, 191, 236, 0.95); /* sedikit transparan supaya bg terlihat tapi tidak ganggu */
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+      text-align: center;
+      color: #293c4e;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 0.95rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background-color: #5821da;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #2e815b;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        margin: 30px 15px;
+        padding: 20px;
+      }
+      h1 {
+        font-size: 1.5rem;
+      }
+      label, input, textarea, button {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Formulir Layanan Pengaduan Rambu Lalu Lintas</h1>
+
+    <form id="pengaduanForm">
+      <label for="nama">Nama Pelapor</label>
+      <input type="text" id="nama" name="nama" required>
+
+      <label for="nomor">Nomor HP/WhatsApp</label>
+      <input type="tel" id="nomor" name="nomor" required pattern="[0-9]{10,15}" title="Masukkan nomor HP/WA yang valid">
+
+      <label for="tanggal">Tanggal Pelapor</label>
+      <input type="date" id="tanggal" name="tanggal" required>
+
+      <label for="ruas">Ruas Lokasi Kerusakan</label>
+      <input type="text" id="ruas" name="ruas" required>
+
+      <label for="deskripsi">Deskripsi Pengaduan</label>
+      <textarea id="deskripsi" name="deskripsi" rows="5" required></textarea>
+
+      <label for="bukti">Upload Bukti (Foto/Video)</label>
+      <input type="file" id="bukti" name="bukti" accept="image/*,video/*">
+
+      <button type="submit">Kirim Pengaduan</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("pengaduanForm").addEventListener("submit", function(e){
+      e.preventDefault();
+      var formData = new FormData(this);
+      var file = document.getElementById("bukti").files[0];
+
+      if (file) {
+        var reader = new FileReader();
+        reader.onloadend = function() {
+          var base64 = reader.result.split(",")[1];
+          formData.set("bukti", base64);
+          formData.append("filename", file.name);
+          formData.append("filetype", file.type);
+          sendData(formData);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        sendData(formData);
+      }
+    });
+
+    function sendData(formData) {
+      fetch("https://script.google.com/macros/s/AKfycbzgnFa2ChCxW6CXXCSkbIJMM3tKAhn6TlMDlHZvBHZBx8dIkJNWx2ZCxNfD1zccXEL7jw/exec", {
+        method: "POST",
+        body: formData
+      })
+      .then(() => {
+        window.location.href = "terimakasih.html";
+      })
+      .catch(err => {
+        alert("Error: " + err);
+      });
+    }
+  </script>
+</body>
+</html>
